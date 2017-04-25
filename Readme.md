@@ -1,22 +1,25 @@
-#VCal - A Minimalistic Calcuation System
+# VCal - A Minimalistic Calcuation System
 
-##Intro
+## Intro
 VCal is a library designed to programatically evaluate strings containing
 mathematical terms without the need for a full-fledged scripting language.
 
-##Usage
+## Usage
 
+```C#
 void Evaluate()
 {
   string function = "1 + 4";
   var result = new TermParse.EvalString(function);
   System.Console.Println(result);   // Prints 5
 }
+```
 
-###Variables
+### Variables
 VCal terms can contain variables, that are evaluated, when the term is evaluated.
 e.g.:
 
+```C#
 void EvaluateWithVariables()
 {
   Symboltable sym = new Symboltable;
@@ -26,15 +29,18 @@ void EvaluateWithVariables()
   var result = term.Eval(sym);
   System.Console.Prinln(result);    // Prints 4.
 }
+```
+
 Note, that the variable x in the above example does not need to exist, when the
 term "x - 20" is parsed. The interpreter will store a transient reference and
 only try to access x, when it evaluates the term - i.e. x must exist, when
 the term is evaluated, but there is no need beforehand.
 
-###Termvariables
+### Termvariables
 A VCal variable can be a term itself and dependent on other variables, thus,
 we can do fancy stuff like this:
 
+```C#
 void EvaluateWithTermVars()
 {
   Symboltable sym = new Symboltable;
@@ -45,6 +51,7 @@ void EvaluateWithTermVars()
   var result = term.Eval(sym);
   System.Console.Prinln(result);    // Prints -11
 }
+```
 
 A word of explaination: At first we register a termresolver with the name "x",
 which evaluates to the term "4 * y + 1", afterwards we register the variable y,
@@ -53,14 +60,14 @@ to:
 4 * 2 + 1 - 20
 yielding 11
 
-##Built-In Functionality:
+## Built-In Functionality:
 - Standard Operators + - * /
 - Listprocessing: Min, Max, Sum
 - Arithmetics: Sin, Cos, Pow, Sqrt
 
-##Extending the functionality
+## Extending the functionality
 
-###User Functions
+### User Functions
 VCal allows to define functions that take a given number of parameters and return
 a single value. A function is defined using the "Def" command, which needs to
 be supplied 3 paramters:
@@ -71,7 +78,7 @@ e.g.:
 Def(TestFunc,{p0, p1}, p0 + p1)
 Defines the function "TestFunc", taking two parameters(p0 and p1).
 
-###Custom Built-In Functions
+### Custom Built-In Functions
 User functions provide an easy way to extend the functionality, however they are
 of limited use due to the fact that they are:
 - Written in VCal syntax, which is intenionally simple.
@@ -95,12 +102,14 @@ be cast as well.
 
 Example from one of the built-in functions already defined:
 
+```C#
 public static object Cos(List<Node> parameters, SymbolTable symTable)
 {
     if (parameters.Count != 1)
         throw new InvalidOperationException("Cos needs exactly 1 parameter.");
     return (float)Math.Cos((float)parameters[0].Eval(symTable));
 }
+```
 
 Here the result of eval is cast directly to float. Note that we don't care for
 errorhandling here, yet. This will probably happen at a later point in development.
@@ -115,6 +124,7 @@ Easy - in the first examples, we passed a symboltable into the eval function. No
 if we add our built-in to that table, it is accessible for all other functions.
 Example:
 
+```C#
 public static object MyFirstBuiltIn(List<Node> parameters, SymbolTable symTable)
 {
     if (parameters.Count != 2)
@@ -130,9 +140,10 @@ void EvaluateCustomFunction()
   var result = term.Eval(sym);
   System.Console.Prinln(result);    // Prints 7
 }
+```
 
 
-##The REPL
+## The REPL
 VCal comes with a simple "Read-Eval-Print-Loop" (REPL) program, that can be used
 to test the functionality of the library. The REPL is a pure commandline interface
 that accepts VCal syntax and directly evaluates it. The REPL uses a single global
